@@ -21,6 +21,33 @@
 #include <iterator>
 
 
+// Macro to help with insisting on inlining with the compiler
+#if !(defined(insist_inline))
+
+#  if defined( __clang__ ) || defined( __GNUC__ )
+#     define insist_inline __attribute__((always_inline)) inline
+#  elif defined( _MSC_VER ) // || COMPILER(RVCT))
+#     define insist_inline __forceinline
+#  else
+#     define insist_inline inline
+#  endif // compiler switch
+
+#else // This code is not seen if our definition is active
+
+#  ifdef _MSC_VER
+#     pragma message(\
+         "warning: insist_inline defined by compiler or library and might not \
+behave as expected." \
+      )
+#  else
+#     warning (                                                                \
+         "insist_inline defined by compiler or library and might not behave as expected."\
+      )
+#  endif
+
+#endif // insist_inline
+
+
 namespace estd {
 
 namespace detail {
@@ -36,10 +63,12 @@ constexpr auto Ascending = Direction::ascending;
 constexpr auto Descending = Direction::descending;
 
 
+
 //------------------------------------------------------------------------------
 template< typename Iterator, typename Reference >
 struct Dereference {
 public:
+   insist_inline
    auto operator*() -> Reference {
       return static_cast<Iterator&>(*this).cur_val_;
    }
@@ -51,6 +80,7 @@ public:
 template< typename Iterator >
 struct Increment {
 public:
+   insist_inline
    auto operator++() -> Iterator& {
       auto& self = static_cast<Iterator&>(*this);
       ( self.direction_ == Ascending ) ? ++(self.cur_val_): --(self.cur_val_);
@@ -61,12 +91,16 @@ public:
 
 
 //------------------------------------------------------------------------------
+
 template< typename Iterator >
 struct EqualityComparisons {
+
+   insist_inline
    bool operator==( Iterator const& rhs ) const {
       return static_cast<Iterator const&>(*this).cur_val_ == rhs.cur_val_;
    }
 
+   insist_inline
    bool operator!=( Iterator const& rhs ) const {
       return !(*this == rhs);
    }
@@ -87,6 +121,7 @@ public:
    using pointer = T*;
    using difference_type = void;
 
+   insist_inline
    unit_range_iterator( T val, Direction dir )
                : direction_{ dir }, cur_val_{ val } {
    }
@@ -107,16 +142,19 @@ struct range {
 private:
    using value_type = typename Iterator::value_type;
 public:
+   insist_inline
    range( value_type start, value_type stop ) :
       direction_{ (start < stop) ? Ascending : Descending },
       cur_val_{ start },
       end_{ stop } {
    }
 
+   insist_inline
    auto begin() -> Iterator {
       return Iterator{ cur_val_, direction_ };
    }
 
+   insist_inline
    auto end() -> Iterator {
       return Iterator{ end_, direction_ };
    }
