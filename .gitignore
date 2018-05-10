@@ -1,0 +1,27 @@
+# Files
+*.o
+*.pro
+*.user
+*.orig
+*.DS_Store
+*.zip
+*.autosave
+*.swp
+*.tgz
+*.tar.gz
+*.tar
+*.sublime-workspace
+
+# Build directories
+[bB][lL][dD]/
+[bB][lL][dD][sS]/
+[bB][uU][iI][lL][dD]/
+[bB][uU][iI][lL][dD][sS]/
+[bB][lL][dD]_[tT][rR][eE][eE]/
+[bB][lL][dD]_[tT][rR][eE][eE][sS]/
+[bB][lL][dD][sS]_[tT][rR][eE][eE]/
+[bB][lL][dD][sS]_[tT][rR][eE][eE][sS]/
+
+# Doc directories
+[dD][oO][cC]/
+[dD][oO][cC][sS]/
