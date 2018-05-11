@@ -167,6 +167,16 @@ private:
 
 } // namespace detail
 
+template< typename T >
+auto range( T stop ) -> estd::detail::range< estd::detail::unit_range_iterator<T> > {
+   return estd::detail::range< estd::detail::unit_range_iterator<T> >{ T{ 0 }, stop };
+}
+
+template< typename T >
+auto range( T start, T stop ) -> estd::detail::range< estd::detail::unit_range_iterator<T> > {
+   return estd::detail::range< estd::detail::unit_range_iterator<T> >{ start, stop };
+}
+
 } // namespace estd
 
 #endif // RANGE_FN_RANGE_HXX_
