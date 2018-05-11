@@ -50,6 +50,13 @@ behave as expected." \
 
 namespace estd {
 
+inline namespace cxx14 {
+
+template< bool Boolean, class T = void >
+using enable_if_t = typename std::enable_if< Boolean, T >::type;
+
+}
+
 namespace detail {
 
 
@@ -92,12 +99,23 @@ public:
 
 //------------------------------------------------------------------------------
 
-template< typename Iterator >
+template< typename Iterator, typename Value >
 struct EqualityComparisons {
 
+   template< typename T = bool >
    insist_inline
-   bool operator==( Iterator const& rhs ) const {
+   auto operator==( Iterator const& rhs ) const
+                  -> enable_if_t< !std::is_floating_point<Value>::value, T > {
       return static_cast<Iterator const&>(*this).cur_val_ == rhs.cur_val_;
+   }
+
+   template< typename T = bool >
+   insist_inline
+   auto operator==( Iterator const& rhs ) const
+                  -> enable_if_t< std::is_floating_point<Value>::value, T > {
+      return ( static_cast<Iterator const&>(*this).direction_ == Ascending ) ?
+               ( static_cast<Iterator const&>(*this).cur_val_ >= rhs.cur_val_ ) :
+                  ( static_cast<Iterator const&>(*this).cur_val_ <= rhs.cur_val_ );
    }
 
    insist_inline
@@ -113,7 +131,7 @@ template< typename T >
 struct unit_range_iterator :
    Dereference< unit_range_iterator<T>, T& >,
    Increment< unit_range_iterator<T> >,
-   EqualityComparisons< unit_range_iterator<T> > {
+   EqualityComparisons< unit_range_iterator<T>, T > {
 public:
    using value_type = T;
    using reference = T&;
@@ -131,7 +149,7 @@ private:
 
    friend Dereference< unit_range_iterator<T>, T& >;
    friend Increment< unit_range_iterator<T> >;
-   friend EqualityComparisons< unit_range_iterator<T> >;
+   friend EqualityComparisons< unit_range_iterator<T>, T >;
 };
 
 

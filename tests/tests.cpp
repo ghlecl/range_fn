@@ -124,7 +124,7 @@ SCENARIO( "Python like range function", "[range][iteration]" )
    }
 
 
-   GIVEN( "a pair of numbers [b, e[ to iterate through" )
+   GIVEN( "a pair of ascending integral numbers [b, e[ to iterate through" )
    {
       int b = 15;
       int e = 20;
@@ -139,6 +139,66 @@ SCENARIO( "Python like range function", "[range][iteration]" )
          THEN( "the resulting vector is filled with numbers from b to e-1." )
          {
             REQUIRE( the_vec == std::vector<int>{ 15, 16, 17, 18, 19 } );
+         }
+      }
+   }
+
+
+   GIVEN( "a pair of descending integral numbers [b, e[ to iterate through" )
+   {
+      int b = 13;
+      int e = 7;
+      std::vector<int> the_vec;
+      the_vec.reserve( 6 );
+      WHEN( "range is called with those numbers" )
+      {
+         for( auto const& cur_idx : estd::range( b, e ) )
+         {
+            the_vec.push_back( cur_idx );
+         }
+         THEN( "the resulting vector is filled with numbers from b to e-1." )
+         {
+            REQUIRE( the_vec == std::vector<int>{ 13, 12, 11, 10, 9, 8 } );
+         }
+      }
+   }
+
+
+   GIVEN( "a pair of ascending floating point numbers [b, e[ to iterate through" )
+   {
+      float b = 15.0f;
+      float e = 20.0f;
+      std::vector<float> the_vec;
+      the_vec.reserve( 5 );
+      WHEN( "range is called with those numbers" )
+      {
+         for( auto const& cur_idx : estd::range( b, e ) )
+         {
+            the_vec.push_back( cur_idx );
+         }
+         THEN( "the resulting vector is filled with numbers from b to e-1." )
+         {
+            REQUIRE( the_vec == std::vector<float>{ 15.0, 16.0, 17.0, 18.0, 19.0 } );
+         }
+      }
+   }
+
+
+   GIVEN( "a pair of descending floating point numbers [b, e[ to iterate through" )
+   {
+      float b = 13.0f;
+      float e = 7.0f;
+      std::vector<float> the_vec;
+      the_vec.reserve( 6 );
+      WHEN( "range is called with those numbers" )
+      {
+         for( auto const& cur_idx : estd::range( b, e ) )
+         {
+            the_vec.push_back( cur_idx );
+         }
+         THEN( "the resulting vector is filled with numbers from b to e-1." )
+         {
+            REQUIRE( the_vec == std::vector<float>{ 13.0, 12.0, 11.0, 10.0, 9.0, 8.0 } );
          }
       }
    }

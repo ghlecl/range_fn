@@ -1,0 +1,21 @@
+{
+	"folders":
+	[
+		{
+         "path": ".",
+         "folder_exclude_patterns": [
+            "bld"
+         ],
+         "file_exclude_patterns": [
+            ".gitignore",
+            "*.sublime-project",
+            "*.sublime-workspace"
+         ]
+      }
+
+	],
+   "build_cxx":
+   {
+      "work_dir": "bld"
+   }
+}
