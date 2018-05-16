@@ -183,16 +183,21 @@ private:
    value_type end_;
 };
 
-} // namespace detail
 
 template< typename T >
-auto range( T stop ) -> estd::detail::range< estd::detail::unit_range_iterator<T> > {
-   return estd::detail::range< estd::detail::unit_range_iterator<T> >{ T{ 0 }, stop };
+using unit_range = range< unit_range_iterator<T> >;
+
+} // namespace detail
+
+
+template< typename T >
+insist_inline auto range( T start, T stop ) -> detail::unit_range<T> {
+   return detail::unit_range<T>{ start, stop };
 }
 
 template< typename T >
-auto range( T start, T stop ) -> estd::detail::range< estd::detail::unit_range_iterator<T> > {
-   return estd::detail::range< estd::detail::unit_range_iterator<T> >{ start, stop };
+insist_inline auto range( T stop ) -> detail::unit_range<T> {
+   return range( T{0}, stop );
 }
 
 } // namespace estd
