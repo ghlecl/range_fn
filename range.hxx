@@ -66,8 +66,8 @@ enum class Direction : uint_fast8_t {
    descending
 };
 
-constexpr auto Ascending = Direction::ascending;
-constexpr auto Descending = Direction::descending;
+constexpr const auto Ascending = Direction::ascending;
+constexpr const auto Descending = Direction::descending;
 
 
 
@@ -144,7 +144,7 @@ public:
                : direction_{ dir }, cur_val_{ val } {
    }
 private:
-   Direction direction_;
+   Direction const direction_;
    T cur_val_;
 
    friend Dereference< unit_range_iterator<T>, T& >;
@@ -178,9 +178,9 @@ public:
    }
 
 private:
-   Direction direction_;
-   value_type cur_val_;
-   value_type end_;
+   Direction const direction_;
+   value_type const cur_val_;
+   value_type const end_;
 };
 
 
