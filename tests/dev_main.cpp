@@ -39,5 +39,10 @@ int main( int argc, char* argv[] ) {
    }
    printf("\n");
 
+   for( auto idx : estd::range( 8u, 0u, -2 ) ) {
+      printf( "%d, ", idx );
+   }
+   printf("\n");
+
    return 0;
 }

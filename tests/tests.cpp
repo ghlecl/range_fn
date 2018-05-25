@@ -14,7 +14,9 @@
 // limitations under the License.
 //
 
+#include <cstdlib>
 #include <vector>
+
 
 #include "./catch.hpp"
 
@@ -198,7 +200,47 @@ SCENARIO( "Python like range function", "[range][iteration]" )
          }
          THEN( "the resulting vector is filled with numbers from b to e-1." )
          {
-            REQUIRE( the_vec == std::vector<float>{ 13.0, 12.0, 11.0, 10.0, 9.0, 8.0 } );
+            REQUIRE( the_vec == std::vector<float>{ 13.0f, 12.0f, 11.0f, 10.0f, 9.0f, 8.0f } );
+         }
+      }
+   }
+
+   GIVEN( "a pair of descending floating point numbers [b, e[ to iterate through and a step s" )
+   {
+      float b = 13.4f;
+      float e = -15.18f;
+      float s = -3.0f;
+      std::vector<float> the_vec;
+      the_vec.reserve( 10 );
+      WHEN( "range is called with those numbers" )
+      {
+         for( auto const& cur_idx : estd::range( b, e, s ) )
+         {
+            the_vec.push_back( cur_idx );
+         }
+         THEN( "the resulting vector is filled with numbers from b to e-1." )
+         {
+            std::vector<float> rslt{
+               13.4f, 10.4f, 7.4f, 4.4f, 1.4f, -1.6f,
+               -4.6f, -7.6f, -10.6f, -13.6f
+            };
+
+            REQUIRE_THAT(
+               the_vec,
+               Catch::Predicate< std::vector<float> >(
+                 [&rslt] (std::vector<float> const& vec) -> bool {
+                     if( vec.size() != rslt.size() ) { return false; }
+
+                     for( std::size_t idx{0}; idx != vec.size(); ++idx ) {
+                        if( vec[idx] != Approx( rslt[idx] ) ) { return false; }
+                     }
+                     return true;
+                  },
+                  "Numbers in the vector should be\n"
+                  "{ 13.4f, 10.4f, 7.4f, 4.4f, 1.4f, -1.6f,"
+                  " -4.6f, -7.6f, -10.6f, -13.6f }"
+               )
+            );
          }
       }
    }
