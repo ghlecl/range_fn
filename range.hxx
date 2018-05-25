@@ -100,7 +100,7 @@ public:
 //------------------------------------------------------------------------------
 
 template< typename Iterator, typename Value >
-struct EqualityComparisons {
+struct StopCondition {
 
    template< typename T = bool >
    insist_inline
@@ -131,7 +131,7 @@ template< typename T >
 struct unit_range_iterator :
    Dereference< unit_range_iterator<T>, T& >,
    Increment< unit_range_iterator<T> >,
-   EqualityComparisons< unit_range_iterator<T>, T > {
+   StopCondition< unit_range_iterator<T>, T > {
 public:
    using value_type = T;
    using reference = T&;
@@ -149,7 +149,7 @@ private:
 
    friend Dereference< unit_range_iterator<T>, T& >;
    friend Increment< unit_range_iterator<T> >;
-   friend EqualityComparisons< unit_range_iterator<T>, T >;
+   friend StopCondition< unit_range_iterator<T>, T >;
 };
 
 
