@@ -52,12 +52,103 @@ namespace estd {
 
 inline namespace cxx14 {
 
+
+//------------------------------------------------------------------------------
+//! @brief Equivalent to [`std::enable_if_t`]
+//! (http://en.cppreference.com/w/cpp/types/enable_if) in C++14 and up.
+//!
+//! As long as C++11 is the minimum supported version, this is necessary.
 template< bool Boolean, class T = void >
 using enable_if_t = typename std::enable_if< Boolean, T >::type;
 
+
+
+//------------------------------------------------------------------------------
+//! @brief Equivalent to [`std::remove_reference_t`]
+//! (http://en.cppreference.com/w/cpp/types/remove_reference) in C++14 and up.
+//!
+//! As long as C++11 is the minimum supported version, this is necessary.
+template< typename T >
+using remove_reference_t = typename ::std::remove_reference< T >::type;
+
+
+
+//------------------------------------------------------------------------------
+//! Equivalent to [`std::remove_cv_t`]
+//! (http://en.cppreference.com/w/cpp/types/remove_cv) in C++14 and up.
+//!
+//! As long as C++11 is the minimum supported version, this is necessary.
+template< typename T >
+using remove_cv_t = typename ::std::remove_cv< T >::type;
+
 }
 
+
+inline namespace cxx20 {
+
+//------------------------------------------------------------------------------
+//! Equivalent to [`std::remove_cvref`]
+//! (http://en.cppreference.com/w/cpp/types/remove_cvref) in C++20 and up.
+//!
+//! As long as C++11 is the minimum supported version, this is necessary.
+template< typename T >
+struct remove_cvref {
+   using type = ::estd::remove_cv_t< ::estd::remove_reference_t< T > >;
+};
+
+
+//! @brief Equivalent to [`std::remove_cvref_t`]
+//! (http://en.cppreference.com/w/cpp/types/remove_cvref) in C++20 and up.
+//!
+//! As long as C++11 is the minimum supported version, this is
+//! necessary.
+template< typename T >
+using remove_cvref_t = typename ::estd::remove_cvref<T>::type;
+
+} // namespace cxx20
+
+
+
 namespace detail {
+
+
+//------------------------------------------------------------------------------
+//! @brief Check if type is a character type
+//!
+//! Sets the value member of a std::integral_constant to true if the type `T` is
+//! one of the following:
+//!    - char
+//!    - char16_t
+//!    - char32_t
+//!    - wchar_t
+template< typename T >
+using is_character = std::integral_constant<
+   bool,
+   std::is_same< ::estd::remove_cvref_t<T>, char >::value
+   || std::is_same< ::estd::remove_cvref_t<T>, char16_t >::value
+   || std::is_same< ::estd::remove_cvref_t<T>, char32_t >::value
+   || std::is_same< ::estd::remove_cvref_t<T>, wchar_t >::value
+>;
+
+
+
+
+template< typename T >
+using is_allowed_range_type = std::integral_constant<
+   bool,
+   ( std::is_integral< ::estd::remove_cvref_t<T> >::value
+   && !std::is_same< ::estd::remove_cvref_t<T>, bool >::value )
+   || std::is_floating_point< ::estd::remove_cvref_t<T> >::value
+>;
+
+template< typename Step >
+using is_allowed_step_type = std::integral_constant<
+   bool,
+   ( is_allowed_range_type< Step >::value
+      && !is_character< Step >::value )
+>;
+
+
 
 
 //------------------------------------------------------------------------------
@@ -222,6 +313,10 @@ public:
       cur_val_{ start },
       end_{ stop },
       step_{1} {
+      static_assert(
+         is_allowed_range_type<T>::value,
+         "Only integers, characters and floating points are allowed in ranges."
+      );
    }
 
    template< typename U, typename _ = void, typename = enable_if_t< length == Other, _ > >
@@ -230,6 +325,14 @@ public:
       cur_val_{ start },
       end_{ stop },
       step_{ static_cast<T>(step) } {
+      static_assert(
+         detail::is_allowed_range_type<T>::value,
+         "Only integers, characters and floating points are allowed in ranges."
+      );
+      static_assert(
+         detail::is_allowed_step_type<U>::value,
+         "Only integers and floating point types are allowed as the step type."
+      );
    }
 
    template< typename Return = Iterator<T, length> >
@@ -278,6 +381,10 @@ using range = Range< T, Other, range_iterator >;
 //------------------------------------------------------------------------------
 template< typename T >
 insist_inline auto range( T start, T stop ) -> detail::unit_range< T > {
+   static_assert(
+      detail::is_allowed_range_type<T>::value,
+      "Only integers, characters and floating points are allowed in ranges."
+   );
    return detail::unit_range<T>{ start, stop };
 }
 
@@ -286,6 +393,10 @@ insist_inline auto range( T start, T stop ) -> detail::unit_range< T > {
 //------------------------------------------------------------------------------
 template< typename T >
 insist_inline auto range( T stop ) -> detail::unit_range< T > {
+   static_assert(
+      detail::is_allowed_range_type<T>::value,
+      "Only integers, characters and floating points are allowed in ranges."
+   );
    return range( T{0}, stop );
 }
 
@@ -294,6 +405,14 @@ insist_inline auto range( T stop ) -> detail::unit_range< T > {
 //------------------------------------------------------------------------------
 template< typename T, typename U >
 insist_inline auto range( T start, T stop, U step ) -> detail::range< T > {
+   static_assert(
+      detail::is_allowed_range_type<T>::value,
+      "Only integers, characters and floating points are allowed in ranges."
+   );
+   static_assert(
+      detail::is_allowed_step_type<U>::value,
+      "Only integers and floating point types are allowed as the step type."
+   );
    return detail::range< T >{ start, stop, step };
 }
 
